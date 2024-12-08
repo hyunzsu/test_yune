@@ -1,12 +1,6 @@
-interface ElementProps {
-  id: string;
-  type: 'div' | 'span' | 'p';
-  style: {
-    backgroundColor: string;
-    width: number;
-    height: number;
-  };
-}
+import type { Element as ElementType } from '../../types/element';
+
+type ElementProps = ElementType;
 
 export default function Element({ id, type, style }: ElementProps) {
   return (

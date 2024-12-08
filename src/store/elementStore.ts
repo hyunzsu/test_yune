@@ -1,18 +1,9 @@
 import { create } from 'zustand';
-
-interface Element {
-  id: string;
-  type: 'div' | 'span' | 'p';
-  style: {
-    backgroundColor: string;
-    width: number;
-    height: number;
-  };
-}
+import { Element, ElementType } from '../types/element';
 
 interface ElementStore {
   elements: Element[];
-  addElement: (type: 'div' | 'span' | 'p') => void;
+  addElement: (type: ElementType) => void;
 }
 
 export const useElementStore = create<ElementStore>((set) => ({
