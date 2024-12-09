@@ -3,14 +3,14 @@ import { Element, ElementType } from '../types/element';
 
 interface ElementStore {
   elements: Element[];
-  selectedId: string | null;
+  selectedIds: string[];
   addElement: (type: ElementType) => void;
-  selectElement: (id: string) => void;
+  selectElement: (id: string, isMultiSelect?: boolean) => void;
 }
 
 export const useElementStore = create<ElementStore>((set) => ({
   elements: [],
-  selectedId: null,
+  selectedIds: [],
   addElement: (type) => {
     set((state) => {
       const newElement: Element = {
@@ -27,7 +27,17 @@ export const useElementStore = create<ElementStore>((set) => ({
       };
     });
   },
-  selectElement: (id) => {
-    set({ selectedId: id });
+  selectElement: (id, isMultiSelect = false) => {
+    set((state) => {
+      if (isMultiSelect) {
+        // 다중 선택, 이미 선택된 경우 제거
+        const newSelectedIds = state.selectedIds.includes(id)
+          ? state.selectedIds.filter((selectedId) => selectedId !== id)
+          : [...state.selectedIds, id];
+        return { selectedIds: newSelectedIds };
+      }
+      // 단일 선택
+      return { selectedIds: [id] };
+    });
   },
 }));
