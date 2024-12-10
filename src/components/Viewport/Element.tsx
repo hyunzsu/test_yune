@@ -1,3 +1,4 @@
+import React from 'react';
 import type { BaseElement } from '../../types/element';
 import { useElementStore } from '../../store/elementStore';
 
@@ -31,13 +32,13 @@ export default function Element({ id, type, style, children }: ElementProps) {
 
   return type === 'group' ? (
     <section
-      className="relative cursor-pointer p-1"
+      className="cursor-pointer border-2 border-dashed border-gray-700 p-1"
       style={{
         display: style?.display || 'flex',
         flexDirection: style?.flexDirection || 'row',
         backgroundColor: style?.backgroundColor,
         width: 'fit-content',
-        height: style?.height,
+        height: 'fit-content',
       }}
       draggable
       onDragStart={handleDragStart}
@@ -45,48 +46,42 @@ export default function Element({ id, type, style, children }: ElementProps) {
       onDrop={handleDrop}
       onClick={handleClick}
     >
-      <div className="absolute inset-0 border-2 border-dashed border-gray-700" />
-      <div
-        style={{
-          display: style?.display || 'flex',
-          flexDirection: style?.flexDirection || 'row',
-        }}
-      >
-        {/* 재귀적 렌더링: 그룹 내부의 각 요소를 렌더링 */}
-        {children?.map((childId) => {
-          // 1. 그룹에 포함된 원본 요소 찾기
-          const childElement = groupedElements.find((el) => el.id === childId);
-          return childElement ? (
-            // 2. 재귀적으로 Element 컴포넌트 렌더링
-            <Element
-              key={childId}
-              id={childId}
-              type={childElement.type}
-              style={childElement.style}
-              children={childElement.children}
-            />
-          ) : null;
-        })}
-      </div>
+      {/* 재귀적 렌더링: 그룹 내부의 각 요소를 렌더링 */}
+      {children?.map((childId) => {
+        // 1. 그룹에 포함된 원본 요소 찾기
+        const childElement = groupedElements.find((el) => el.id === childId);
+        return childElement ? (
+          // 2. 재귀적으로 Element 컴포넌트 렌더링
+          <Element
+            key={childId}
+            id={childId}
+            type={childElement.type}
+            style={childElement.style}
+            children={childElement.children}
+          />
+        ) : null;
+      })}
     </section>
   ) : (
-    <div
-      data-element
-      className={`cursor-pointer select-none ${
-        selectedIds.includes(id) ? 'border-2 border-orange-600' : ''
-      }`}
-      style={{
-        backgroundColor: style?.backgroundColor,
-        width: style?.width,
-        height: style?.height,
-      }}
-      draggable
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      onClick={handleClick}
-    >
-      {type}
-    </div>
+    React.createElement(
+      type,
+      {
+        className: `cursor-pointer select-none ${
+          selectedIds.includes(id) ? 'border-2 border-orange-600' : ''
+        }`,
+        style: {
+          backgroundColor: style?.backgroundColor,
+          width: style?.width,
+          height: style?.height,
+          display: type === 'span' ? 'inline-block' : undefined,
+        },
+        draggable: true,
+        onDragStart: handleDragStart,
+        onDragOver: handleDragOver,
+        onDrop: handleDrop,
+        onClick: handleClick,
+      },
+      type
+    )
   );
 }
