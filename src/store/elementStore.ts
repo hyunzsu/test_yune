@@ -66,43 +66,32 @@ export const useElementStore = create<ElementStore>((set) => ({
     set((state) => {
       if (state.selectedIds.length < 2) return state;
 
-      // selectedIds의 첫 번째 요소를 기준으로 스타일 정보 가져오기
-      const firstElement = state.elements.find(
-        (el) => el.id === state.selectedIds[0]
-      )!;
-      const firstElementIndex = state.elements.findIndex(
-        (el) => el.id === state.selectedIds[0]
-      );
-
+      // 1. 새로운 그룹 요소 생성
       const groupElement: BaseElement = {
         id: crypto.randomUUID(),
         type: 'group',
         children: state.selectedIds,
-        style: {
-          backgroundColor: 'transparent',
-          width: firstElement.style.width * state.selectedIds.length,
-          height: firstElement.style.height,
-        },
       };
 
-      // 그룹화되지 않은 요소들 필터링
-      const nonGroupedElements = state.elements.filter(
-        (el) => !state.selectedIds.includes(el.id)
-      );
+      // 2. 새로운 elements 배열 생성 (선택된 요소 제외하고 그룹 추가)
+      const newElements = state.elements.reduce((acc, element) => {
+        if (element.id === state.selectedIds[0]) {
+          acc.push(groupElement);
+        }
+        if (!state.selectedIds.includes(element.id)) {
+          acc.push(element);
+        }
+        return acc;
+      }, [] as BaseElement[]);
 
-      // 새로운 elements 배열 생성
-      const newElements = [...nonGroupedElements];
-      newElements.splice(firstElementIndex, 0, groupElement);
-
-      // 그룹화된 원본 요소들은 state.elements에서 바로 필터링
-      const originalElements = state.elements.filter((el) =>
-        state.selectedIds.includes(el.id)
-      );
-
+      // 3. 상태 업데이트
       return {
         elements: newElements,
         selectedIds: [groupElement.id],
-        groupedElements: [...state.groupedElements, ...originalElements],
+        groupedElements: [
+          ...state.groupedElements,
+          ...state.elements.filter((el) => state.selectedIds.includes(el.id)),
+        ],
       };
     });
   },

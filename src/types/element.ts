@@ -9,6 +9,6 @@ export interface ElementStyle {
 export interface BaseElement {
   id: string;
   type: ElementType;
-  style: ElementStyle;
+  style?: ElementStyle;
   children?: string[];
 }
