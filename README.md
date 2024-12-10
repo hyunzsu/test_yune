@@ -1,50 +1,77 @@
-# React + TypeScript + Vite
+## Yune
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 이 프로젝트는 웹 기반의 엘리먼트 에디터로, HTML 요소들을 자유롭게 추가하고, 그룹화하며, 정렬할 수 있는 기능을 제공합니다.
 
-Currently, two official plugins are available:
+<div align ="center">
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<img width="1171" alt="image" src="https://github.com/user-attachments/assets/c81b4ed6-214a-4518-8900-e42952ee251f">
 
-## Expanding the ESLint configuration
+</div>
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 🚀 프로젝트 설치
 
-- Configure the top-level `parserOptions` property like this:
+```bash
+# 의존성 설치
+npm install
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# 개발 서버 실행
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 🛠 주요 기술 스택
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- React
+- TypeScript
+- Tailwind CSS
+- html-to-image
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### 💡 주요 기능
+
+**1. 엘리먼트 생성 및 관리**
+
+- div, span, p 태그 생성 기능
+- 생성 시 랜덤 배경색 자동 적용
+- 선택된 요소 border 하이라이트 (2px)
+- 뷰포트와 레이어 패널 양방향 동기화
+
+**2. 그룹 기능**
+
+- 단축키를 통한 그룹 생성 (Ctrl + G)
+- 그룹 해제 (Ctrl + Shift + G)
+
+**3. 정렬 시스템 (Flexbox 기반)**
+
+- 전체 요소 수직/수평 정렬
+- 그룹 내부 요소 수직/수평 정렬
+
+**4. 드래그 앤 드롭**
+
+- 요소 순서 자유롭게 변경
+- 뷰포트와 레이어 패널 양방향 동기화
+
+**5. 내보내기**
+
+- SVG 형식으로 작업물 다운로드
+- 현재 뷰포트 상태 그대로 저장
+
+### 📁 폴더 구조
+
+```
+src/
+├── components/
+│   ├── @common/
+│   │   └── Button.tsx
+│   ├── Panel/
+│   │   ├── ButtonPanel.tsx
+│   │   ├── LayerPanel.tsx
+│   │   └── index.tsx
+│   └── Viewport/
+│       ├── Element.tsx
+│       └── index.tsx
+├── store/
+│   └── elementStore.ts
+├── hooks/
+│   └── useDownloadImage.ts
+└── types/
+    └── element.ts
 ```
