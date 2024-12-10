@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Panel from './components/Panel';
+import Viewport from './components/Viewport';
+import { useElementStore } from './store/elementStore';
+import { useEffect } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const createGroup = useElementStore((state) => state.createGroup);
+  const unGroup = useElementStore((state) => state.unGroup);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.code === 'KeyG') {
+        if (e.shiftKey) {
+          // Ctrl+Shift+G를 눌렀을 때 그룹 해제
+          e.preventDefault();
+          unGroup();
+        } else {
+          // Ctrl+G를 눌렀을 때 그룹 생성
+          e.preventDefault();
+          createGroup();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [createGroup, unGroup]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main className="flex min-h-screen w-full">
+      <Panel />
+      <Viewport />
+    </main>
+  );
 }
 
-export default App
+export default App;
