@@ -1,11 +1,11 @@
 import { useElementStore } from '../../store/elementStore';
 import Element from './Element';
-import { useDownloadSvg } from '../../hooks/useDownloadSvg';
+import { useDownloadImage } from '../../hooks/useDownloadImage';
 
 export default function Viewport() {
   const elements = useElementStore((state) => state.elements);
   const containerStyle = useElementStore((state) => state.containerStyle);
-  const downloadAsSvg = useDownloadSvg();
+  const { downloadAsSvg } = useDownloadImage();
 
   return (
     <article className="relative flex-1">
@@ -22,7 +22,6 @@ export default function Viewport() {
           flexDirection: containerStyle?.flexDirection || 'row',
         }}
       >
-        {/* 요소들이 배치될 영역 */}
         {elements.map((el) => (
           <Element key={el.id} {...el} />
         ))}
