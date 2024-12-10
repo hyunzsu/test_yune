@@ -66,41 +66,43 @@ export const useElementStore = create<ElementStore>((set) => ({
     set((state) => {
       if (state.selectedIds.length < 2) return state;
 
-      // 1. 선택된 요소들 찾기
-      const selectedElements = state.elements.filter((el) =>
-        state.selectedIds.includes(el.id)
+      // selectedIds의 첫 번째 요소를 기준으로 스타일 정보 가져오기
+      const firstElement = state.elements.find(
+        (el) => el.id === state.selectedIds[0]
+      )!;
+      const firstElementIndex = state.elements.findIndex(
+        (el) => el.id === state.selectedIds[0]
       );
 
-      // 2. 첫 번째 선택된 요소의 인덱스 찾기
-      const firstSelectedIndex = Math.min(
-        ...selectedElements.map((el) => state.elements.indexOf(el))
-      );
-
-      // 3. 새로운 그룹 요소 생성
       const groupElement: BaseElement = {
         id: crypto.randomUUID(),
         type: 'group',
         children: state.selectedIds,
         style: {
           backgroundColor: 'transparent',
-          width: selectedElements[0].style.width * selectedElements.length,
-          height: selectedElements[0].style.height,
+          width: firstElement.style.width * state.selectedIds.length,
+          height: firstElement.style.height,
         },
       };
 
-      // 4. 그룹화되지 않은 요소들 필터링
+      // 그룹화되지 않은 요소들 필터링
       const nonGroupedElements = state.elements.filter(
         (el) => !state.selectedIds.includes(el.id)
       );
 
-      // 5. 새로운 elements 배열 생성
+      // 새로운 elements 배열 생성
       const newElements = [...nonGroupedElements];
-      newElements.splice(firstSelectedIndex, 0, groupElement);
+      newElements.splice(firstElementIndex, 0, groupElement);
+
+      // 그룹화된 원본 요소들은 state.elements에서 바로 필터링
+      const originalElements = state.elements.filter((el) =>
+        state.selectedIds.includes(el.id)
+      );
 
       return {
         elements: newElements,
         selectedIds: [groupElement.id],
-        groupedElements: [...state.groupedElements, ...selectedElements], // 그룹화된 요소들 저장
+        groupedElements: [...state.groupedElements, ...originalElements],
       };
     });
   },
