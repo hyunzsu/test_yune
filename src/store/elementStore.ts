@@ -1,20 +1,23 @@
 import { create } from 'zustand';
-import { Element, ElementType } from '../types/element';
+import { ElementType, BaseElement } from '../types/element';
 
 interface ElementStore {
-  elements: Element[];
+  elements: BaseElement[];
   selectedIds: string[];
+  groupedElements: BaseElement[];
   addElement: (type: ElementType) => void;
   selectElement: (id: string, isMultiSelect?: boolean) => void;
   reorderElement: (dragId: string, dropId: string) => void;
+  createGroup: () => void;
 }
 
 export const useElementStore = create<ElementStore>((set) => ({
   elements: [],
   selectedIds: [],
+  groupedElements: [],
   addElement: (type) => {
     set((state) => {
-      const newElement: Element = {
+      const newElement: BaseElement = {
         id: crypto.randomUUID(),
         type,
         style: {
@@ -57,6 +60,48 @@ export const useElementStore = create<ElementStore>((set) => ({
 
       // 5. 새로운 순서의 배열로 상태 업데이트
       return { elements };
+    });
+  },
+  createGroup: () => {
+    set((state) => {
+      if (state.selectedIds.length < 2) return state;
+
+      // 1. 선택된 요소들 찾기
+      const selectedElements = state.elements.filter((el) =>
+        state.selectedIds.includes(el.id)
+      );
+
+      // 2. 첫 번째 선택된 요소의 인덱스 찾기
+      const firstSelectedIndex = Math.min(
+        ...selectedElements.map((el) => state.elements.indexOf(el))
+      );
+
+      // 3. 새로운 그룹 요소 생성
+      const groupElement: BaseElement = {
+        id: crypto.randomUUID(),
+        type: 'group',
+        children: state.selectedIds,
+        style: {
+          backgroundColor: 'transparent',
+          width: selectedElements[0].style.width * selectedElements.length,
+          height: selectedElements[0].style.height,
+        },
+      };
+
+      // 4. 그룹화되지 않은 요소들 필터링
+      const nonGroupedElements = state.elements.filter(
+        (el) => !state.selectedIds.includes(el.id)
+      );
+
+      // 5. 새로운 elements 배열 생성
+      const newElements = [...nonGroupedElements];
+      newElements.splice(firstSelectedIndex, 0, groupElement);
+
+      return {
+        elements: newElements,
+        selectedIds: [groupElement.id],
+        groupedElements: [...state.groupedElements, ...selectedElements], // 그룹화된 요소들 저장
+      };
     });
   },
 }));
