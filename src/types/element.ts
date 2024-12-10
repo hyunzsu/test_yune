@@ -1,4 +1,4 @@
-export type ElementType = 'div' | 'span' | 'p';
+export type ElementType = 'div' | 'span' | 'p' | 'group';
 
 export interface ElementStyle {
   backgroundColor: string;
@@ -6,8 +6,9 @@ export interface ElementStyle {
   height: number;
 }
 
-export interface Element {
+export interface BaseElement {
   id: string;
   type: ElementType;
   style: ElementStyle;
+  children?: string[];
 }
