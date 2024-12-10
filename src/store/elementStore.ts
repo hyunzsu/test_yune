@@ -77,11 +77,16 @@ export const useElementStore = create<ElementStore>((set) => ({
     set((state) => {
       if (state.selectedIds.length < 2) return state;
 
-      // 1. 새로운 그룹 요소 생성
+      // 원래 순서대로 정렬된 선택된 요소들의 ID 배열 생성
+      const orderedSelectedIds = state.elements
+        .filter((element) => state.selectedIds.includes(element.id))
+        .map((element) => element.id);
+
+      // 1. 새로운 그룹 요소 생성 (정렬된 ID 배열 사용)
       const groupElement: BaseElement = {
         id: crypto.randomUUID(),
         type: 'group',
-        children: state.selectedIds,
+        children: orderedSelectedIds,
       };
 
       // 2. 새로운 elements 배열 생성 (선택된 요소 제외하고 그룹 추가)
@@ -154,17 +159,19 @@ export const useElementStore = create<ElementStore>((set) => ({
 
       // 2. 그룹 정렬인 경우
       const newElements = [...state.elements];
-      const selectedGroup = newElements.find(
-        (el) => el.type === 'group' && state.selectedIds.includes(el.id)
-      );
-
-      if (selectedGroup) {
-        selectedGroup.style = {
-          ...selectedGroup.style,
-          display: 'flex',
-          flexDirection: direction === 'vertical' ? 'column' : 'row',
-        };
-      }
+      // 모든 그룹 요소를 찾아서 정렬 (선택 여부와 관계없이)
+      newElements.forEach((element, index) => {
+        if (element.type === 'group') {
+          newElements[index] = {
+            ...element,
+            style: {
+              ...element.style,
+              display: 'flex',
+              flexDirection: direction === 'vertical' ? 'column' : 'row',
+            },
+          };
+        }
+      });
 
       return { elements: newElements };
     });
