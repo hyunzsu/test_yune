@@ -30,27 +30,34 @@ export default function Element({ id, type, style, children }: ElementProps) {
   };
 
   return type === 'group' ? (
-    <div
-      className="relative"
+    <section
+      className="relative cursor-pointer p-1"
       style={style}
-      onClick={handleClick}
       draggable
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onClick={handleClick}
     >
-      <div className="absolute inset-0 border-2 border-dashed border-gray-400" />
+      <div className="absolute inset-0 border-2 border-dashed border-gray-700" />
       <div className="flex flex-wrap">
+        {/* 재귀적 렌더링: 그룹 내부의 각 요소를 렌더링 */}
         {children?.map((childId) => {
-          const originalElement = groupedElements.find(
-            (el) => el.id === childId
-          );
-          return originalElement ? (
-            <Element key={childId} {...originalElement} />
+          // 1. 그룹에 포함된 원본 요소 찾기
+          const childElement = groupedElements.find((el) => el.id === childId);
+          return childElement ? (
+            // 2. 재귀적으로 Element 컴포넌트 렌더링
+            <Element
+              key={childId}
+              id={childId}
+              type={childElement.type}
+              style={childElement.style}
+              children={childElement.children}
+            />
           ) : null;
         })}
       </div>
-    </div>
+    </section>
   ) : (
     <div
       className={`cursor-pointer select-none ${

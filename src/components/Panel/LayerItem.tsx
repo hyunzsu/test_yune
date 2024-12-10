@@ -1,7 +1,7 @@
-import { Element } from '../../types/element';
+import { BaseElement } from '../../types/element';
 import { useElementStore } from '../../store/elementStore';
 
-type LayerItemProps = Pick<Element, 'id' | 'type'>;
+type LayerItemProps = Pick<BaseElement, 'id' | 'type'>;
 
 export default function LayerItem({ id, type }: LayerItemProps) {
   const selectedIds = useElementStore((state) => state.selectedIds);
