@@ -9,6 +9,7 @@ interface ElementStore {
   selectElement: (id: string, isMultiSelect?: boolean) => void;
   reorderElement: (dragId: string, dropId: string) => void;
   createGroup: () => void;
+  unGroup: () => void;
 }
 
 export const useElementStore = create<ElementStore>((set) => ({
@@ -25,6 +26,7 @@ export const useElementStore = create<ElementStore>((set) => ({
           width: 190,
           height: 190,
         },
+        children: [],
       };
       return {
         elements: [...state.elements, newElement],
@@ -92,6 +94,40 @@ export const useElementStore = create<ElementStore>((set) => ({
           ...state.groupedElements,
           ...state.elements.filter((el) => state.selectedIds.includes(el.id)),
         ],
+      };
+    });
+  },
+  unGroup: () => {
+    set((state) => {
+      // 1. 선택된 요소가 그룹인지 확인
+      const groupElement = state.elements.find(
+        (el) => el.id === state.selectedIds[0] && el.type === 'group'
+      );
+      if (!groupElement || !groupElement.children) return state;
+
+      // 2. 그룹의 자식 요소들을 elements에 추가
+      const newElements = state.elements.reduce((acc, element) => {
+        if (element.id === groupElement.id) {
+          // 그룹 요소를 자식 요소들로 대체
+          const childElements = groupElement.children
+            .map((childId) =>
+              state.groupedElements.find((el) => el.id === childId)
+            )
+            .filter(Boolean) as BaseElement[];
+          acc.push(...childElements);
+        } else {
+          acc.push(element);
+        }
+        return acc;
+      }, [] as BaseElement[]);
+
+      // 3. 상태 업데이트
+      return {
+        elements: newElements,
+        selectedIds: groupElement.children,
+        groupedElements: state.groupedElements.filter(
+          (el) => !groupElement.children.includes(el.id)
+        ),
       };
     });
   },

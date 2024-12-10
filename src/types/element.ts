@@ -10,5 +10,5 @@ export interface BaseElement {
   id: string;
   type: ElementType;
   style?: ElementStyle;
-  children?: string[];
+  children: string[];
 }
