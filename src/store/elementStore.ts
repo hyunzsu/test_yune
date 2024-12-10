@@ -5,17 +5,26 @@ interface ElementStore {
   elements: BaseElement[];
   selectedIds: string[];
   groupedElements: BaseElement[];
+  containerStyle: {
+    display: 'flex';
+    flexDirection: 'column' | 'row';
+  } | null;
   addElement: (type: ElementType) => void;
   selectElement: (id: string, isMultiSelect?: boolean) => void;
   reorderElement: (dragId: string, dropId: string) => void;
   createGroup: () => void;
   unGroup: () => void;
+  alignElements: (
+    direction: 'vertical' | 'horizontal',
+    scope: 'all' | 'group'
+  ) => void;
 }
 
 export const useElementStore = create<ElementStore>((set) => ({
   elements: [],
   selectedIds: [],
   groupedElements: [],
+  containerStyle: null,
   addElement: (type) => {
     set((state) => {
       const newElement: BaseElement = {
@@ -129,6 +138,35 @@ export const useElementStore = create<ElementStore>((set) => ({
           (el) => !groupElement.children.includes(el.id)
         ),
       };
+    });
+  },
+  alignElements: (direction, scope) => {
+    set((state) => {
+      // 1. 전체 정렬인 경우
+      if (scope === 'all') {
+        return {
+          containerStyle: {
+            display: 'flex',
+            flexDirection: direction === 'vertical' ? 'column' : 'row',
+          },
+        };
+      }
+
+      // 2. 그룹 정렬인 경우
+      const newElements = [...state.elements];
+      const selectedGroup = newElements.find(
+        (el) => el.type === 'group' && state.selectedIds.includes(el.id)
+      );
+
+      if (selectedGroup) {
+        selectedGroup.style = {
+          ...selectedGroup.style,
+          display: 'flex',
+          flexDirection: direction === 'vertical' ? 'column' : 'row',
+        };
+      }
+
+      return { elements: newElements };
     });
   },
 }));

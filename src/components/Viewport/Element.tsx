@@ -32,7 +32,13 @@ export default function Element({ id, type, style, children }: ElementProps) {
   return type === 'group' ? (
     <section
       className="relative cursor-pointer p-1"
-      style={style}
+      style={{
+        display: style?.display || 'flex',
+        flexDirection: style?.flexDirection || 'row',
+        backgroundColor: style?.backgroundColor,
+        width: 'fit-content',
+        height: style?.height,
+      }}
       draggable
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
@@ -40,7 +46,12 @@ export default function Element({ id, type, style, children }: ElementProps) {
       onClick={handleClick}
     >
       <div className="absolute inset-0 border-2 border-dashed border-gray-700" />
-      <div className="flex flex-wrap">
+      <div
+        style={{
+          display: style?.display || 'flex',
+          flexDirection: style?.flexDirection || 'row',
+        }}
+      >
         {/* 재귀적 렌더링: 그룹 내부의 각 요소를 렌더링 */}
         {children?.map((childId) => {
           // 1. 그룹에 포함된 원본 요소 찾기
@@ -63,7 +74,11 @@ export default function Element({ id, type, style, children }: ElementProps) {
       className={`cursor-pointer select-none ${
         selectedIds.includes(id) ? 'border-2 border-orange-600' : ''
       }`}
-      style={style}
+      style={{
+        backgroundColor: style?.backgroundColor,
+        width: style?.width,
+        height: style?.height,
+      }}
       draggable
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
