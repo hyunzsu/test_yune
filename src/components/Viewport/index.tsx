@@ -1,17 +1,22 @@
 import { useElementStore } from '../../store/elementStore';
 import Element from './Element';
+import { useDownloadSvg } from '../../hooks/useDownloadSvg';
 
 export default function Viewport() {
   const elements = useElementStore((state) => state.elements);
   const containerStyle = useElementStore((state) => state.containerStyle);
+  const downloadAsSvg = useDownloadSvg();
 
   return (
     <article className="relative flex-1">
-      <button className="absolute left-2 top-2 border border-black bg-orange-600 p-2">
+      <button
+        onClick={downloadAsSvg}
+        className="absolute left-2 top-2 border border-black bg-orange-600 p-2"
+      >
         Download as SVG
       </button>
       <section
-        className="mx-2 mt-16"
+        className="elements-container mx-2 mt-16"
         style={{
           display: containerStyle?.display || 'flex',
           flexDirection: containerStyle?.flexDirection || 'row',

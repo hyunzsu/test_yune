@@ -71,6 +71,7 @@ export default function Element({ id, type, style, children }: ElementProps) {
     </section>
   ) : (
     <div
+      data-element
       className={`cursor-pointer select-none ${
         selectedIds.includes(id) ? 'border-2 border-orange-600' : ''
       }`}
